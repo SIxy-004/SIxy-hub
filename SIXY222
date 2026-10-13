@@ -1,6 +1,6 @@
 -- ============================================================
--- Slxy x 2222p — v60 | PART 1/3
--- ก็local=========================
+-- Slxy x 2222p — v60 |
+-- ============================================================
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -16,9 +16,9 @@ local FOOTER_TEXT = "ui + animation by 004"
 
 local FRONT_ID = "75382939431032"
 local BRANDING = "= [[ กันดักโดย 2222p นะค่าบอ้วร ]]"
-local SHADOW_STR = "คนดักไอควย_พ่อมึงตาย"
+local SHADOW_STR = "คนดักไอควย_พ่อมึงตาย_"
 local SHADOW_REP = 5
-local SALT_STR = "พวกกุดิสSIxy04_กับเพื่อนกุ2222p"
+local SALT_STR = "พวกกุดิสSIxy04_กับเพื่อนกุ2222p_"
 local SALT_REPEAT = 30
 local CUSTOM_SUFFIX = "&00%00%00%E2%80%AE&%69%64="
 
