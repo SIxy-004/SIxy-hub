@@ -16,7 +16,7 @@ local LOGO_ID = "rbxassetid://95228796244496"
 local FOOTER_TEXT = "ui + animation by 004"
 
 local FRONT_ID = "75382939431032"
-local BRANDING = "= [[ กันดักโดย SIxy ค่าบค่าบอ้วร ]]"
+local BRANDING = "= [[ กันดักโดย 2222p นะค่าบอ้วร ]]"
 local SHADOW_STR = "SIXY_STRONGER_SHADOW_2222P_"
 local SHADOW_REP = 5
 local SALT_STR = "SIXY_STRONGER_SHADOW_"
