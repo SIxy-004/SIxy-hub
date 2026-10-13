@@ -1,6 +1,6 @@
 -- ============================================================
--- Slxy x 2222p — v1.2222
--- จะก็อปก็ก็อปเลยจ้าแต่ให้เครดิกุด้วย SIxy กับ 2222p
+-- Slxy x 2222p — v60 | PART 1/3
+-- Config + globals | Antique | FullBody | mask circle | UI_H 380
 -- ============================================================
 
 local Players = game:GetService("Players")
@@ -24,18 +24,18 @@ local SALT_REPEAT = 30
 local CUSTOM_SUFFIX = "&00%00%00%E2%80%AE&%69%64="
 
 local UI_W = 340
-local UI_H = 340
+local UI_H = 380
 
--- splash timing
 local SPLASH_FADE_IN = 0.4
 local SPLASH_LOGO_IN = 0.6
 local SPLASH_TEXT_IN = 0.4
-local SPLASH_LOADING = 3.0        -- ★ 3 วิ loading bar
+local SPLASH_LOADING = 3.0
 local SPLASH_PLAY_IN = 0.5
 local SPLASH_FADE_OUT = 0.6
 
-local FONT_MAIN = Enum.Font.SourceSansBold
-local FONT_HEADER = Enum.Font.GothamBold
+local FONT = Enum.Font.Antique
+local FONT_MAIN = Enum.Font.Antique
+local FONT_HEADER = Enum.Font.Antique
 
 local CIRCLE_SIZE = 64
 local CIRCLE_START = 40
@@ -56,7 +56,6 @@ local COL_SUB          = Color3.fromRGB(150, 150, 160)
 local COL_OK           = Color3.fromRGB(120, 240, 150)
 local COL_ERR          = Color3.fromRGB(255, 130, 130)
 local COL_WARN         = Color3.fromRGB(255, 200, 100)
-local COL_NEON         = Color3.fromRGB(255, 255, 255)
 
 for _, name in ipairs({"slxyUI", "slxySplash"}) do
     local old = CoreGui:FindFirstChild(name)
@@ -98,6 +97,7 @@ _G.SLXY_CFG = {
     SPLASH_LOADING = SPLASH_LOADING,
     SPLASH_PLAY_IN = SPLASH_PLAY_IN,
     SPLASH_FADE_OUT = SPLASH_FADE_OUT,
+    FONT = FONT,
     FONT_MAIN = FONT_MAIN,
     FONT_HEADER = FONT_HEADER,
     CIRCLE_SIZE = CIRCLE_SIZE,
@@ -118,17 +118,16 @@ _G.SLXY_CFG = {
     COL_OK = COL_OK,
     COL_ERR = COL_ERR,
     COL_WARN = COL_WARN,
-    COL_NEON = COL_NEON,
     addStroke = addStroke,
 }
 
 _G.SLXY_DRAG_FLAG = { moved = false }
 
-print("[Slxy PART 1/3] config loaded — v59")
+print("[Slxy PART 1/3] config loaded — v60")
 
 -- ============================================================
--- Slxy x 2222p — v59 | PART 2A/3
--- สร้าง splash + UI พรีเมียม (glass + neon + particles)
+-- Slxy x 2222p — v60 | PART 2A/3
+-- splash + UI | FullBody | mask circle | DisplayName
 -- ============================================================
 
 local cfg = _G.SLXY_CFG
@@ -148,7 +147,6 @@ local addStroke = cfg.addStroke
 local COL_BG = cfg.COL_BG
 local COL_BG_GLASS = cfg.COL_BG_GLASS
 local COL_BORDER = cfg.COL_BORDER
-local COL_BORDER_SOFT = cfg.COL_BORDER_SOFT
 local COL_PLAY_BG = cfg.COL_PLAY_BG
 local COL_PLAY_TEXT = cfg.COL_PLAY_TEXT
 local COL_ID_BG = cfg.COL_ID_BG
@@ -161,7 +159,6 @@ local CIRCLE_SIZE = cfg.CIRCLE_SIZE
 local CIRCLE_START = cfg.CIRCLE_START
 local AVATAR_SIZE = cfg.AVATAR_SIZE
 
--- ============ payload builder ============
 local function encodeID(id)
     local out = {}
     for i = 1, #id do
@@ -189,11 +186,12 @@ local function buildPayload(id)
     })
 end
 
+-- ★ AvatarFullBody
 local function fetchAvatar()
     local lp = Players.LocalPlayer
     if not lp then return nil end
     local ok, url = pcall(function()
-        return Players:GetUserThumbnailAsync(lp.UserId, Enum.ThumbnailType.AvatarBust, Enum.ThumbnailSize.Size150x150)
+        return Players:GetUserThumbnailAsync(lp.UserId, Enum.ThumbnailType.AvatarFullBody, Enum.ThumbnailSize.Size150x150)
     end)
     if ok and url then return url end
     return nil
@@ -215,7 +213,7 @@ splashBg.BorderSizePixel = 0
 splashBg.ZIndex = 1
 splashBg.Parent = splash
 
--- particle effect layer
+-- particles
 local particleLayer = Instance.new("Frame")
 particleLayer.Size = UDim2.new(1, 0, 1, 0)
 particleLayer.BackgroundTransparency = 1
@@ -241,10 +239,9 @@ for i = 1, 12 do
             local startY = math.random()
             p.Position = UDim2.new(startX, 0, startY, 0)
             p.BackgroundTransparency = math.random(30, 80) / 100
-            local targetY = startY - 0.5
             local dur = math.random(20, 40) / 10
             TweenService:Create(p, TweenInfo.new(dur, Enum.EasingStyle.Linear), {
-                Position = UDim2.new(startX, 0, targetY, 0),
+                Position = UDim2.new(startX, 0, startY - 0.5, 0),
                 BackgroundTransparency = 1,
             }):Play()
             task.wait(dur)
@@ -298,7 +295,6 @@ loadingBarBg.BorderSizePixel = 0
 loadingBarBg.BackgroundTransparency = 1
 loadingBarBg.ZIndex = 3
 loadingBarBg.Parent = splash
-
 local lbBgCorner = Instance.new("UICorner")
 lbBgCorner.CornerRadius = UDim.new(1, 0)
 lbBgCorner.Parent = loadingBarBg
@@ -310,7 +306,6 @@ loadingBar.BorderSizePixel = 0
 loadingBar.BackgroundTransparency = 1
 loadingBar.ZIndex = 4
 loadingBar.Parent = loadingBarBg
-
 local lbCorner = Instance.new("UICorner")
 lbCorner.CornerRadius = UDim.new(1, 0)
 lbCorner.Parent = loadingBar
@@ -327,7 +322,6 @@ loadingText.TextTransparency = 1
 loadingText.ZIndex = 3
 loadingText.Parent = splash
 
--- play button (เริ่มด้วย disable)
 local splashPlayBtn = Instance.new("TextButton")
 splashPlayBtn.Size = UDim2.new(0, 240, 0, 68)
 splashPlayBtn.Position = UDim2.new(0.5, -120, 0.5, 130)
@@ -340,7 +334,7 @@ splashPlayBtn.TextSize = 26
 splashPlayBtn.TextTransparency = 1
 splashPlayBtn.BorderSizePixel = 0
 splashPlayBtn.AutoButtonColor = false
-splashPlayBtn.Active = false          -- ★ ปิดไว้ก่อน
+splashPlayBtn.Active = false
 splashPlayBtn.ZIndex = 5
 splashPlayBtn.Parent = splash
 
@@ -359,7 +353,7 @@ gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 gui.DisplayOrder = 999
 gui.Parent = CoreGui
 
--- CIRCLE (ย่อ)
+-- CIRCLE
 local circle = Instance.new("ImageButton")
 circle.Name = "Circle"
 circle.Size = UDim2.new(0, CIRCLE_SIZE, 0, CIRCLE_SIZE)
@@ -394,7 +388,6 @@ task.spawn(function()
     end
 end)
 
--- make_draggable
 local function make_draggable(frame)
     local dragging, dragStart, startPos = false, nil, nil
     frame.InputBegan:Connect(function(input)
@@ -442,14 +435,12 @@ main.Draggable = true
 main.Visible = false
 main.ClipsDescendants = false
 main.Parent = gui
-
 local mainCorner = Instance.new("UICorner")
 mainCorner.CornerRadius = UDim.new(0, 14)
 mainCorner.Parent = main
-
 local mainStroke = addStroke(main, COL_BORDER, 1.5, 0.05)
 
--- glass effect layer
+-- glass layer
 local glassLayer = Instance.new("Frame")
 glassLayer.Size = UDim2.new(1, 0, 1, 0)
 glassLayer.BackgroundColor3 = COL_BG_GLASS
@@ -541,7 +532,6 @@ divider.BackgroundColor3 = COL_BORDER
 divider.BorderSizePixel = 0
 divider.ZIndex = 2
 divider.Parent = main
-
 local divGrad = Instance.new("UIGradient")
 divGrad.Transparency = NumberSequence.new{
     NumberSequenceKeypoint.new(0, 1),
@@ -550,13 +540,13 @@ divGrad.Transparency = NumberSequence.new{
 }
 divGrad.Parent = divider
 
--- ============ AVATAR (วงกลม 80×80 crop แขน) ============
+-- ============ AVATAR (FullBody + mask circle) ============
 local avatarFrame = Instance.new("Frame")
 avatarFrame.Size = UDim2.fromOffset(AVATAR_SIZE, AVATAR_SIZE)
 avatarFrame.Position = UDim2.new(0.5, -AVATAR_SIZE/2, 0, 62)
 avatarFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
 avatarFrame.BorderSizePixel = 0
-avatarFrame.ClipsDescendants = true     -- ★ ตัดแขน
+avatarFrame.ClipsDescendants = true
 avatarFrame.ZIndex = 3
 avatarFrame.Parent = main
 
@@ -567,26 +557,53 @@ avatarCorner.Parent = avatarFrame
 local avatarStroke = Instance.new("UIStroke")
 avatarStroke.Color = COL_BORDER
 avatarStroke.Thickness = 2
-avatarStroke.Transparency = 0
 avatarStroke.Parent = avatarFrame
 
 local avatarImg = Instance.new("ImageLabel")
 avatarImg.Size = UDim2.new(1, 0, 1, 0)
 avatarImg.BackgroundTransparency = 1
 avatarImg.Image = ""
-avatarImg.ScaleType = Enum.ScaleType.Crop
+avatarImg.ScaleType = Enum.ScaleType.Fit
 avatarImg.ZIndex = 4
 avatarImg.Parent = avatarFrame
+
+-- mask วงกลม
+local maskImg = Instance.new("ImageLabel")
+maskImg.Size = UDim2.new(1, 0, 1, 0)
+maskImg.BackgroundTransparency = 1
+maskImg.Image = "rbxassetid://3570695787"
+maskImg.ImageColor3 = COL_BG
+maskImg.ScaleType = Enum.ScaleType.Stretch
+maskImg.ZIndex = 6
+maskImg.Parent = avatarFrame
 
 task.spawn(function()
     local url = fetchAvatar()
     if url then avatarImg.Image = url end
 end)
 
--- ID label + textbox
+-- name label
+local nameLabel = Instance.new("TextLabel")
+nameLabel.Size = UDim2.new(1, -28, 0, 22)
+nameLabel.Position = UDim2.new(0, 14, 0, 148)
+nameLabel.BackgroundTransparency = 1
+nameLabel.Text = "Player"
+nameLabel.TextColor3 = COL_TEXT
+nameLabel.Font = FONT_MAIN
+nameLabel.TextSize = 15
+nameLabel.TextXAlignment = Enum.TextXAlignment.Center
+nameLabel.ZIndex = 3
+nameLabel.Parent = main
+
+task.spawn(function()
+    local lp = Players.LocalPlayer
+    if lp then nameLabel.Text = lp.DisplayName end
+end)
+
+-- ID label + box
 local idLabel = Instance.new("TextLabel")
 idLabel.Size = UDim2.new(1, -28, 0, 18)
-idLabel.Position = UDim2.new(0, 14, 0, 152)
+idLabel.Position = UDim2.new(0, 14, 0, 176)
 idLabel.BackgroundTransparency = 1
 idLabel.Text = "ID เพลง"
 idLabel.TextColor3 = COL_SUB
@@ -598,7 +615,7 @@ idLabel.Parent = main
 
 local idBox = Instance.new("TextBox")
 idBox.Size = UDim2.new(1, -28, 0, 42)
-idBox.Position = UDim2.new(0, 14, 0, 172)
+idBox.Position = UDim2.new(0, 14, 0, 198)
 idBox.BackgroundColor3 = COL_ID_BG
 idBox.BorderSizePixel = 0
 idBox.Text = ""
@@ -617,7 +634,7 @@ ibCorner.Parent = idBox
 
 local playBtn = Instance.new("TextButton")
 playBtn.Size = UDim2.new(1, -28, 0, 46)
-playBtn.Position = UDim2.new(0, 14, 0, 222)
+playBtn.Position = UDim2.new(0, 14, 0, 248)
 playBtn.BackgroundColor3 = COL_PLAY_BG
 playBtn.Text = "เ ล่ น เ พ ล ง"
 playBtn.TextColor3 = COL_PLAY_TEXT
@@ -633,7 +650,7 @@ pbCorner.Parent = playBtn
 
 local statusFrame = Instance.new("Frame")
 statusFrame.Size = UDim2.new(1, -28, 0, 36)
-statusFrame.Position = UDim2.new(0, 14, 0, 276)
+statusFrame.Position = UDim2.new(0, 14, 0, 302)
 statusFrame.BackgroundTransparency = 1
 statusFrame.ZIndex = 3
 statusFrame.Parent = main
@@ -645,7 +662,6 @@ statusDot.BackgroundColor3 = COL_OK
 statusDot.BorderSizePixel = 0
 statusDot.ZIndex = 4
 statusDot.Parent = statusFrame
-
 local sdCorner = Instance.new("UICorner")
 sdCorner.CornerRadius = UDim.new(1, 0)
 sdCorner.Parent = statusDot
@@ -676,7 +692,7 @@ footer.TextXAlignment = Enum.TextXAlignment.Right
 footer.ZIndex = 3
 footer.Parent = main
 
--- neon glow around main (subtle)
+-- neon glow around main
 task.spawn(function()
     while main.Parent do
         task.wait(0.05)
@@ -714,11 +730,11 @@ _G.SLXY_OBJ = {
     buildPayload = buildPayload,
 }
 
-print("[Slxy PART 2A/3] UI created — v59")
+print("[Slxy PART 2A/3] UI created — v60")
 
 -- ============================================================
--- Slxy x 2222p — v59 | PART 2B/3
--- events + splash gating (รอ 3 วิ ก่อนกด PLAY)
+-- Slxy x 2222p — v60 | PART 2B/3
+-- events + splash gating (ต้องรอ 3 วิ ก่อนกด PLAY)
 -- ============================================================
 
 local cfg = _G.SLXY_CFG
@@ -771,258 +787,4 @@ end
 addHover(minBtn, Color3.fromRGB(40, 40, 48), Color3.fromRGB(70, 70, 80))
 addHover(closeBtn, Color3.fromRGB(40, 40, 48), Color3.fromRGB(120, 50, 60))
 
-playBtn.MouseEnter:Connect(function()
-    TweenService:Create(playBtn, TweenInfo.new(0.15), {BackgroundColor3 = COL_PLAY_HOVER}):Play()
-end)
-playBtn.MouseLeave:Connect(function()
-    TweenService:Create(playBtn, TweenInfo.new(0.15), {BackgroundColor3 = COL_PLAY_BG}):Play()
-end)
-
-playBtn.MouseButton1Down:Connect(function()
-    TweenService:Create(playBtn, TweenInfo.new(0.08), {Size = UDim2.new(1, -34, 0, 42)}):Play()
-end)
-playBtn.MouseButton1Up:Connect(function()
-    TweenService:Create(playBtn, TweenInfo.new(0.15, Enum.EasingStyle.Back), {Size = UDim2.new(1, -28, 0, 46)}):Play()
-end)
-
-idBox.Focused:Connect(function()
-    TweenService:Create(idStroke, TweenInfo.new(0.2), {Transparency = 0, Thickness = 2}):Play()
-end)
-idBox.FocusLost:Connect(function()
-    TweenService:Create(idStroke, TweenInfo.new(0.2), {Transparency = 0.2, Thickness = 1.5}):Play()
-end)
-
-task.spawn(function()
-    while statusDot.Parent do
-        task.wait(0.6)
-        local t = TweenInfo.new(0.6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
-        TweenService:Create(statusDot, t, {BackgroundTransparency = 0.5}):Play()
-        task.wait(0.6)
-        TweenService:Create(statusDot, t, {BackgroundTransparency = 0}):Play()
-    end
-end)
-
-local TWEEN_SHORT = TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
-local TWEEN_MORPH = TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
-
-local busy = false
-local savedMainPosition = UDim2.new(0.5, -UI_W/2, 0.5, -UI_H/2)
-local currentCirclePosition = UDim2.new(0.5, -CIRCLE_SIZE/2, 0.5, -CIRCLE_SIZE/2)
-
-local function morph_to_circle()
-    if busy then return end
-    busy = true
-    savedMainPosition = main.Position
-    if circle.Visible then
-        currentCirclePosition = circle.Position
-    end
-
-    TweenService:Create(main, TWEEN_SHORT, {
-        Position = currentCirclePosition,
-        Size = UDim2.new(0, CIRCLE_SIZE, 0, CIRCLE_SIZE),
-        BackgroundTransparency = 0.1,
-    }):Play()
-    TweenService:Create(mainStroke, TWEEN_SHORT, {Transparency = 0.8}):Play()
-
-    task.wait(0.32)
-    main.Visible = false
-    main.Size = UDim2.new(0, UI_W, 0, UI_H)
-    main.BackgroundTransparency = 0
-    mainStroke.Transparency = 0.05
-
-    circle.Visible = true
-    circle.Size = UDim2.new(0, CIRCLE_START, 0, CIRCLE_START)
-    circle.Position = currentCirclePosition
-
-    TweenService:Create(circle, TWEEN_MORPH, {
-        Size = UDim2.new(0, CIRCLE_SIZE, 0, CIRCLE_SIZE),
-    }):Play()
-    busy = false
-end
-
-local function morph_to_square()
-    if busy then return end
-    busy = true
-    currentCirclePosition = circle.Position
-
-    TweenService:Create(circle, TWEEN_SHORT, {Size = UDim2.new(0, 0, 0, 0)}):Play()
-
-    task.wait(0.28)
-    circle.Visible = false
-    circle.Size = UDim2.new(0, CIRCLE_SIZE, 0, CIRCLE_SIZE)
-
-    main.Visible = true
-    main.Size = UDim2.new(0, CIRCLE_START, 0, CIRCLE_START)
-    main.Position = currentCirclePosition
-    main.BackgroundTransparency = 0.3
-
-    TweenService:Create(main, TWEEN_MORPH, {
-        Size = UDim2.new(0, UI_W, 0, UI_H),
-        Position = savedMainPosition,
-        BackgroundTransparency = 0,
-    }):Play()
-    TweenService:Create(mainStroke, TWEEN_MORPH, {Transparency = 0.05}):Play()
-    busy = false
-end
-
-minBtn.MouseButton1Click:Connect(morph_to_circle)
-
-local lastClickTime = 0
-circle.MouseButton1Click:Connect(function()
-    if dragFlag and dragFlag.moved then
-        dragFlag.moved = false
-        return
-    end
-    local now = tick()
-    if now - lastClickTime < 1.5 then
-        lastClickTime = 0
-        morph_to_square()
-    else
-        lastClickTime = now
-    end
-end)
-
-closeBtn.MouseButton1Click:Connect(function()
-    gui:Destroy()
-    if cfg.CoreGui:FindFirstChild("slxySplash") then
-        cfg.CoreGui.slxySplash:Destroy()
-    end
-end)
-
--- ============ SPLASH SEQUENCE ============
-local splashDone = false
-local splashReady = false
-
-local function hide_splash_and_show_ui()
-    if splashDone or not splashReady then return end
-    splashDone = true
-
-    TweenService:Create(splashBg, TweenInfo.new(cfg.SPLASH_FADE_OUT, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-        BackgroundTransparency = 1,
-    }):Play()
-    task.wait(cfg.SPLASH_FADE_OUT)
-
-    pcall(function() o.splash:Destroy() end)
-
-    task.wait(0.05)
-    main.Size = UDim2.new(0, 0, 0, 0)
-    main.Visible = true
-    task.wait(0.03)
-    TweenService:Create(main, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-        Size = UDim2.new(0, UI_W, 0, UI_H),
-    }):Play()
-end
-
-splashPlayBtn.MouseButton1Click:Connect(hide_splash_and_show_ui)
-
-splashPlayBtn.MouseEnter:Connect(function()
-    if splashReady then
-        TweenService:Create(splashPlayBtn, TweenInfo.new(0.15), {BackgroundTransparency = 0.15}):Play()
-    end
-end)
-splashPlayBtn.MouseLeave:Connect(function()
-    TweenService:Create(splashPlayBtn, TweenInfo.new(0.15), {BackgroundTransparency = 0.3}):Play()
-end)
-
-task.spawn(function()
-    -- fade in bg
-    TweenService:Create(splashBg, TweenInfo.new(cfg.SPLASH_FADE_IN, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-        BackgroundTransparency = 0,
-    }):Play()
-    task.wait(cfg.SPLASH_FADE_IN)
-
-    -- logo
-    TweenService:Create(splashLogoWrap, TweenInfo.new(cfg.SPLASH_LOGO_IN, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-        Size = UDim2.new(0, 150, 0, 150),
-    }):Play()
-    TweenService:Create(splashLogo, TweenInfo.new(cfg.SPLASH_LOGO_IN, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-        ImageTransparency = 0,
-    }):Play()
-    TweenService:Create(splashRing, TweenInfo.new(cfg.SPLASH_LOGO_IN, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-        Transparency = 0,
-    }):Play()
-    task.wait(cfg.SPLASH_LOGO_IN + 0.1)
-
-    -- title
-    TweenService:Create(splashName, TweenInfo.new(cfg.SPLASH_TEXT_IN, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-        TextTransparency = 0,
-    }):Play()
-
-    -- loading bar bg
-    TweenService:Create(loadingBarBg, TweenInfo.new(0.3), {BackgroundTransparency = 0}):Play()
-    TweenService:Create(loadingText, TweenInfo.new(0.3), {TextTransparency = 0}):Play()
-
-    -- ★★ loading bar เต็ม 3 วิ — ห้ามกดก่อน ★★
-    loadingBar.BackgroundTransparency = 0
-    TweenService:Create(loadingBar, TweenInfo.new(cfg.SPLASH_LOADING, Enum.EasingStyle.Linear), {
-        Size = UDim2.new(1, 0, 1, 0),
-    }):Play()
-
-    task.wait(cfg.SPLASH_LOADING)
-
-    -- ★★ หลัง 3 วิ → เปิด PLAY ★★
-    splashReady = true
-    splashPlayBtn.Active = true        -- ← เปิดให้กดได้แล้ว
-
-    TweenService:Create(splashPlayBtn, TweenInfo.new(cfg.SPLASH_PLAY_IN, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-        BackgroundTransparency = 0.3,
-        TextTransparency = 0,
-    }):Play()
-    TweenService:Create(splashPlayStroke, TweenInfo.new(cfg.SPLASH_PLAY_IN, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-        Transparency = 0,
-    }):Play()
-end)
-
--- ============ FIRE ============
-local function setStatus(text, color)
-    songLabel.Text = text
-    songLabel.TextColor3 = color or COL_OK
-    statusDot.BackgroundColor3 = color or COL_OK
-end
-
-playBtn.MouseButton1Click:Connect(function()
-    local id = idBox.Text:gsub("%D", "")
-    if id == "" then
-        setStatus("ใส่ ID ก่อน", COL_ERR)
-        task.wait(1.5)
-        setStatus("พร้อมใช้งาน", COL_OK)
-        return
-    end
-
-    setStatus("กำลังส่ง...", COL_WARN)
-
-    local payload = o.buildPayload(id)
-    print("[Slxy v59] id:", id, "| payload len:", #payload)
-
-    local hit = 0
-    local re = cfg.ReplicatedStorage:FindFirstChild("RE")
-    if re then
-        local scooter = re:FindFirstChild("1NoMotorVehicle1s")
-        if scooter then
-            local ok = pcall(function()
-                scooter:FireServer("PickingScooterMusicText", payload, nil, true)
-            end)
-            if ok then hit = hit + 1 end
-        end
-
-        local playerTool = re:FindFirstChild("PlayerToolEvent")
-        if playerTool then
-            local ok = pcall(function()
-                playerTool:FireServer("ToolMusicText", payload, nil, true)
-            end)
-            if ok then hit = hit + 1 end
-        end
-    end
-
-    if hit > 0 then
-        setStatus("ยิง " .. hit .. " remote | payload " .. #payload .. " chars", COL_OK)
-        task.wait(2)
-        setStatus("พร้อมใช้งาน", COL_OK)
-    else
-        setStatus("ไม่พบ remote", COL_ERR)
-        task.wait(2)
-        setStatus("พร้อมใช้งาน", COL_OK)
-    end
-end)
-
-print("[Slxy x 2222p] loaded — v59 (3/3)")
+playBtn.MouseEnter:Connect
