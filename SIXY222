@@ -1,6 +1,6 @@
 -- ============================================================
--- Slxy x 2222p — v60 | PART 1/3
--- Config + globals | Antique | FullBody | mask circle | UI_H 380
+-- Slxy x 2222p — v60 | 
+-- ก็อปได้นะครับแต่กุขอเครดิตหน่อย SIxy 2222p 
 -- ============================================================
 
 local Players = game:GetService("Players")
